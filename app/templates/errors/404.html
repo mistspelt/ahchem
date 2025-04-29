@@ -1,0 +1,15 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container d-flex flex-column justify-content-center align-items-center text-center" style="min-height: 70vh;">
+    <h1 class="display-1 mb-3 text-primary">404</h1>
+    <h2 class="mb-4">Experiment Failed! 🧪💥</h2>
+    <p class="text-muted mb-4">
+        You tried to synthesize a page that doesn't exist!<br>
+        Please check the URL or return to the homepage.
+    </p>
+    <a href="{{ url_for('home') }}" class="btn btn-primary">
+        Back to Home
+    </a>
+</div>
+{% endblock %}

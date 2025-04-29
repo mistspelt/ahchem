@@ -1,0 +1,131 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<!-- mi toggle script -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const toggleBtn = document.getElementById("toggleBtn");
+    const collapseEl = document.getElementById("markingInstructions");
+
+    collapseEl.addEventListener("show.bs.collapse", function () {
+        toggleBtn.textContent = "Hide Marking Instructions";
+    });
+
+    collapseEl.addEventListener("hide.bs.collapse", function () {
+        toggleBtn.textContent = "Show Marking Instructions"; 
+    });
+});
+</script>
+
+<div class="container py-5">
+
+    <!-- question name -->
+    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
+        <h2 class="mb-2">{% if question['section']  == '1' %}
+            {{ question['year'] }} Section {{ question['section'] }}, Question {{ question['question_number'] }}
+        {% else %}
+            {{ question['year'] }} Section {{ question['section'] }}, Question {{ question['question_number'] }}{{question['sub_question']}}{{question['subsub_question']}}
+        {% endif %}</h2>
+        <a href="{{ url_for('questions.questions', unit_id=unit_id, topic_id=topic_id) }}" class="btn btn-outline-primary">
+            <i class="fas fa-arrow-left me-2"></i> Back to Questions
+        </a>
+    </div>
+
+    <!-- badges -->
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
+
+        <!-- marks -->
+        <span class="badge bg-primary p-2">
+            <i class="fas fa-star me-1"></i>{{ question['max_marks'] }} Mark{{ question['max_marks'] > 1 and 's' or '' }}
+        </span>
+
+
+        <!-- attempt status -->
+        {% if not current_user.is_anonymous %}
+         {% if attempt %}
+         <span class="badge bg-success p-2">
+             <i class="fas fa-check-circle me-1"></i>Attempted – {{ attempt['score'] }} / {{ question['max_marks'] }}
+         </span>
+         {% else %}
+         <span class="badge bg-danger p-2">
+             <i class="fas fa-times-circle me-1"></i>Not Attempted
+         </span>
+         {% endif %}
+        {% endif %}
+    </div>
+
+    <!-- question image -->
+    <div class="text-center mb-5">
+        <img src="{{ url_for('static', filename='qu/' + question_path) }}" 
+             class="img-fluid rounded shadow-sm" 
+             alt="Question Image">
+    </div>
+
+    <!-- mi toggle button -->
+    <div class="text-center mb-4">
+        <button id="toggleBtn"
+                class="btn btn-outline-secondary"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#markingInstructions"
+                aria-expanded="false"
+                aria-controls="markingInstructions">
+            Show Marking Instructions
+        </button>
+    </div>
+
+    <!-- mi -->
+    <div class="collapse" id="markingInstructions">
+        <div class="card shadow-sm p-4 mb-5">
+
+            <!-- display letter answer if section 1 and image if section 2-->
+            {% if marking_path %}
+                <div class="text-center">
+                    <img src="{{ url_for('static', filename='mi/' + marking_path) }}"
+                            class="img-fluid rounded"
+                            alt="Marking Instructions">
+                    </div>
+            {% else %}
+                <div class="mb-3">
+                    <strong>Correct Answer:</strong>
+                    <p class="mt-2">{{ question['mi'] }}</p>
+                </div>
+            {% endif %}
+            
+            <!-- save marks -->
+            {% if current_user.is_anonymous %}
+                <p class="text-center text-muted">Please <a href="{{ url_for('auth.login') }}">log in</a> to record your marks.</p>
+            {% else %}
+            <form method="POST" action="" class="row gy-2 gx-3 align-items-center justify-content-center mt-3">
+                {{ form.hidden_tag() }}
+            
+                <!-- input marks -->
+                <div class="col-auto">
+                    <label for="marks" class="col-form-label fw-bold">How many marks did you get?</label>
+                </div>
+                <div class="col-auto">
+                    {{ form.marks(class="form-control" + (' is-invalid' if form.marks.errors else ''), id="marks", placeholder="Marks") }}
+                    {% for error in form.marks.errors %}
+                        <div class="invalid-feedback d-block">
+                            {{ error }}
+                        </div>
+                    {% endfor %}
+                </div>
+            
+                <!-- submit button -->
+                <div class="col-auto">
+                    {{ form.submit(class="btn btn-primary") }}
+                </div>
+            </form>
+            
+            
+            {% endif %}
+            
+
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}
