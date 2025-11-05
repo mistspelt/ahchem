@@ -13,7 +13,10 @@ def setup_db(db, app):
         topics = db.session.query(Topic).all()
         units = db.session.query(Unit).all()
         questions = db.session.query(Question).all()
+        attempts = db.session.query(Attempt).all()
 
+        for attempt in attempts:
+            db.session.delete(attempt)
         for question in questions:
             db.session.delete(question)
         for topic in topics:
