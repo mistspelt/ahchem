@@ -4,17 +4,16 @@ from app.models import User, Question, Topic, Unit, oAuth, Attempt
 app = create_app()
 
 # sets up the database with initial topic, unit, and question data
-# and clears any existing data in the database
-# currently only contains data for the 2014 paper
+# and clears any existing question data in the database
+# 
+# currently populates with 2014, 2015, and 2016 data only.
 
 def setup_db(db, app):
     with app.app_context():
         topics = db.session.query(Topic).all()
         units = db.session.query(Unit).all()
         questions = db.session.query(Question).all()
-        attempts = db.session.query(Attempt).all()
-        for attempt in attempts:
-            db.session.delete(attempt)
+
         for question in questions:
             db.session.delete(question)
         for topic in topics:
@@ -294,3 +293,7 @@ def setup_db(db, app):
         db.session.add(Question(question_number=10,sub_question='',subsub_question='ii',max_marks=1,year=2016,section='2',topic_id=10))
         db.session.add(Question(question_number=10,sub_question='d',subsub_question='',max_marks=1,year=2016,section='2',topic_id=10))
         db.session.commit()
+
+if __name__ == "__main__":
+    setup_db(db, app)
+    
